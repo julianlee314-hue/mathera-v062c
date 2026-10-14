@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="char/char.css">
@@ -513,6 +514,14 @@ body.gatewide .app{max-width:1440px}
 .ghint span{display:inline-block;padding:3px 12px;border-radius:999px;background:rgba(14,15,19,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .gres:not([hidden])+.ghint{display:none}
 .skl .r.found{background:var(--acc-soft);box-shadow:inset 3px 0 0 var(--acc)}
+/* search lives in the header bar */
+.top .gsearch{position:relative;left:auto;top:auto;transform:none;flex:1 1 260px;max-width:520px;width:auto;margin:0 auto;z-index:30}
+.top .gbox{height:40px;border-radius:12px;padding:0 12px;gap:8px;box-shadow:none}
+.top .gbox svg{width:17px;height:17px}
+.top .gbox input{font-size:15px}
+.top .gres{position:absolute;left:0;right:0;top:100%;margin-top:6px}
+.top .ghint{display:none}
+@media (max-width:760px){.top .gsearch{order:3;flex:1 1 100%;max-width:none;margin:0}}
 @media (hover:none){.gp img{filter:saturate(.85) brightness(.8)}.gp .gl em{opacity:1;transform:none}}
 @media (max-width:760px){
   .gate{gap:10px}
@@ -695,6 +704,12 @@ body.focus .evline,body.djwide .evline{display:none}
 <div class="app">
   <div class="top">
     <div class="brand">Mathera<span>v0.6.2</span></div>
+    <div class="gsearch" role="search">
+      <div class="gbox"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="gQ" type="search" placeholder="Search any skill" title="Try “fractions”, “quadratic” or “II.5”" autocomplete="off" spellcheck="false" role="combobox" aria-label="Search any skill" aria-expanded="false" aria-controls="gRes" aria-autocomplete="list"><kbd>/</kbd></div>
+      <ul class="gres" id="gRes" role="listbox" aria-label="Skills" hidden></ul>
+      <p class="ghint"><span>Try “fractions”, “quadratic” or “II.5”, or pick a world.</span></p>
+    </div>
     <nav class="tabs" aria-label="Main" id="tabs">
       <button data-v="gate" aria-current="page">Worlds</button>
       <button data-v="home" aria-current="false">Tree</button>
@@ -711,12 +726,6 @@ body.focus .evline,body.djwide .evline{display:none}
   <!-- THE GATE: seven worlds and the skill search -->
   <section class="view gate" id="v-gate" hidden>
     <h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Choose a world</h1>
-    <div class="gsearch" role="search">
-      <div class="gbox"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-        <input id="gQ" type="search" placeholder="Search any skill" autocomplete="off" spellcheck="false" role="combobox" aria-label="Search any skill" aria-expanded="false" aria-controls="gRes" aria-autocomplete="list"><kbd>/</kbd></div>
-      <ul class="gres" id="gRes" role="listbox" aria-label="Skills" hidden></ul>
-      <p class="ghint"><span>Try “fractions”, “quadratic” or “II.5”, or pick a world.</span></p>
-    </div>
     <div class="gpanels" id="gPanels"></div>
   </section>
 
@@ -42464,6 +42473,7 @@ function teleSave() {}            // step counters stay on this device only; not
 let view = 'home';
 const VIEWS = ['loading', 'gate', 'welcome', 'home', 'alarm', 'practice', 'id', 'rules', 'report', 'world'];
 function show(v) {
+  { const gs = document.querySelector('.top .gsearch'); if (gs) gs.hidden = v !== 'gate'; }
   if (v !== 'report') RSRC = null;
   view = v; VIEWS.forEach(x => $('v-' + x).hidden = x !== v); document.body.classList.toggle('focus', v === 'practice'); document.body.classList.toggle('worldwide', v === 'world'); document.body.classList.toggle('gatewide', v === 'gate'); document.body.classList.toggle('wt', v === 'gate' || v === 'welcome' || v === 'home' || v === 'world'); document.body.classList.toggle('homewide', v === 'home' || v === 'welcome'); wtBg(v);
   document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.v === v || ((v === 'practice' || v === 'alarm' || v === 'world') && b.dataset.v === 'home' || v === 'report' && b.dataset.v === 'id') ? 'page' : 'false'));
